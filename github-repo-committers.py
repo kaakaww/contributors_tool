@@ -117,12 +117,14 @@ def org_iterator(org_name):
             authors.update(repo_details(repo.full_name))
         else:
             break
-    print("In total you have " + str(len(authors)) + " contributors over the last 90 day in " + str(max_repos)
+    print("\n In total you have " + str(len(authors)) + " contributors over the last 90 day in " + str(max_repos)
           + " repositories.")
+
 
 
 args = parse_args()
 days_back = 90
+global authors
 authors = {}
 
 global g
@@ -133,8 +135,11 @@ if args.repo_name is not None:
     authors.update(repo_details(args.repo_name))
 elif args.org_name is not None:
     org_iterator(args.org_name)
+    for author, date in authors.items():
+        print(author + ": " + date)
 else:
     print('I didn\'t have a repository or a GitHub Organization to inspect. Please run again -h to see the help.')
+
 
 
 
