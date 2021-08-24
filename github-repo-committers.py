@@ -11,9 +11,9 @@ from git import Repo
 def parse_args():
     parser = argparse.ArgumentParser(description="Count developers on a GitHub repo or in a GitHub Organization "
                                                  "for the last 90 days")
-    parser.add_argument('--access_token', type=str, help="Your Github PAT")
+    parser.add_argument('--access_token', required=True, type=str, help="Your Github PAT")
     parser.add_argument('--org_name', type=str, help="Name of the GitHub Organization you want to check in 'org' format")
-    parser.add_argument('--max_repos', type=str, help="HOw many repos in the Org do you want to inspect? Default=100")
+    parser.add_argument('--max_repos', default=100, type=str, help="How many repos in the Org do you want to inspect? Default=100")
     parser.add_argument('--repo_name', type=str, help="Name of the repo you want to check in 'org/repo' format")
     parser.add_argument('--ghe_hostname', type=str, help="If you use GHE, this is the hostname part of the URL")
 
@@ -83,7 +83,7 @@ def repo_details(repo_name):
     repo_authors = {}
     earliest_commit = None
     commits = g.get_repo(repo_name).get_commits()
-    for commit in commits.__iter__():
+    for commit in commits:
         commit_date = datetime.strptime(commit.raw_data['commit']['committer']['date'], "%Y-%m-%dT%H:%M:%SZ")
         if earliest_commit is None:
             earliest_commit = commit_date - timedelta(days_back)
@@ -102,6 +102,7 @@ def repo_details(repo_name):
     print('Here is the list of contributors email addresses:')
     for author, date in repo_authors.items():
         print(author + ': ' + date)
+    print('\n')
     return repo_authors
 
 
@@ -111,13 +112,13 @@ def org_iterator(org_name):
     repos = org.get_repos(sort="updated")
     i = 0
     max_repos = int(args.max_repos)
-    for repo in repos.__iter__():
+    for repo in repos:
         if i < max_repos:
             i += 1
             authors.update(repo_details(repo.full_name))
         else:
             break
-    print("\n In total you have " + str(len(authors)) + " contributors over the last 90 day in " + str(max_repos)
+    print("In total you have " + str(len(authors)) + " contributors over the last 90 day in " + str(max_repos)
           + " repositories.")
 
 
