@@ -1,19 +1,19 @@
 import argparse
-#import datetime
 from datetime import datetime, timezone, timedelta
 import time
 
 from github import Github
 from github import RateLimitExceededException
-from git import Repo
 
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Count developers on a GitHub repo or in a GitHub Organization "
                                                  "for the last 90 days")
     parser.add_argument('--access_token', required=True, type=str, help="Your Github PAT")
-    parser.add_argument('--org_name', type=str, help="Name of the GitHub Organization you want to check in 'org' format")
-    parser.add_argument('--max_repos', default=100, type=str, help="How many repos in the Org do you want to inspect? Default=100")
+    parser.add_argument('--org_name', type=str, help="Name of the GitHub Organization you want to "
+                                                     "check in 'org' format")
+    parser.add_argument('--max_repos', default=100, type=str, help="How many repos in the Org do you want "
+                                                                   "to inspect? Default=100")
     parser.add_argument('--repo_name', type=str, help="Name of the repo you want to check in 'org/repo' format")
     parser.add_argument('--ghe_hostname', type=str, help="If you use GHE, this is the hostname part of the URL")
 
@@ -80,6 +80,7 @@ def rate_limited_retry():
 
 @rate_limited_retry()
 def repo_details(repo_name):
+    global g
     repo_authors = {}
     earliest_commit = None
     commits = g.get_repo(repo_name).get_commits()
@@ -100,14 +101,16 @@ def repo_details(repo_name):
         f' contributor(s) over 90 days with the earliest commit'
         f' on {earliest_commit}.')
     print('Here is the list of contributors email addresses:')
-    for author, date in repo_authors.items():
-        print(author + ': ' + date)
+    for author, commit_date in repo_authors.items():
+        print(author + ': ' + commit_date)
     print('\n')
     return repo_authors
 
 
 @rate_limited_retry()
 def org_iterator(org_name):
+    global authors
+    global g
     org = g.get_organization(org_name)
     repos = org.get_repos(sort="updated")
     i = 0
@@ -122,15 +125,10 @@ def org_iterator(org_name):
           + " repositories.")
 
 
-
 args = parse_args()
 days_back = 90
-global authors
 authors = {}
-
-global g
 g = Github(login_or_token=args.access_token)
-
 
 if args.repo_name is not None:
     authors.update(repo_details(args.repo_name))
@@ -139,9 +137,4 @@ elif args.org_name is not None:
     for author, date in authors.items():
         print(author + ": " + date)
 else:
-    print('I didn\'t have a repository or a GitHub Organization to inspect. Please run again -h to see the help.')
-
-
-
-
-
+    print("I didn't have a repository or a GitHub Organization to inspect. Please run again with -h to see the help.")
