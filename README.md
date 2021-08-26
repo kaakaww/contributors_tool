@@ -33,3 +33,21 @@ optional arguments:
   --ghe_hostname GHE_HOSTNAME
                         If you use GHE, this is the hostname part of the URL
 ```
+
+
+## Local Repository
+The GitHub version of this tool will help inspect a single local repository. 
+This will output the path of the repo and the committers on said repo for the last 90 day 
+development period.
+
+```console
+usage: local-repo-committers.py [-h] [--dir DIR] 
+
+Count developers on a GitHub repo or in a GitHub Organization for the last 90 days
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --dir DIR
+                        Path to the local repository. Defaults to current working directory
+  
+```
