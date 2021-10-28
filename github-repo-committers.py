@@ -90,9 +90,16 @@ def repo_details(repo_name):
             earliest_commit = commit_date - timedelta(days_back)
 
         if commit_date > earliest_commit:
-            if commit.raw_data['commit']['committer']['email'] not in repo_authors:
-                repo_authors[commit.raw_data['commit']['committer']['email']] = commit.raw_data['commit']['committer'][
-                    'date']
+            if commit.raw_data['author'] and 'login' in commit.raw_data['author']:
+                author = commit.raw_data['author']['login']
+            else:
+                author = commit.raw_data['commit']['committer']['email']
+            # author = commit.raw_data['commit']['committer']['email']
+
+            if not author.startswith('root@') and author not in repo_authors:
+                    repo_authors[author] = commit.raw_data['commit']['committer']['date']
+            #if commit.raw_data['commit']['committer']['email'] not in repo_authors:
+            #    repo_authors[commit.raw_data['commit']['committer']['email']] = commit.raw_data['commit']['committer']['date']
         else:
             break
 
@@ -100,7 +107,7 @@ def repo_details(repo_name):
         f'In the repository \'{repo_name}\', there are {len(repo_authors)}'
         f' contributor(s) over 90 days with the earliest commit'
         f' on {earliest_commit}.')
-    print('Here is the list of contributors email addresses:')
+    print('Here is the list of Github contributors:')
     for author, commit_date in repo_authors.items():
         print(author + ': ' + commit_date)
     print('\n')
@@ -121,7 +128,7 @@ def org_iterator(org_name):
             authors.update(repo_details(repo.full_name))
         else:
             break
-    print("In total you have " + str(len(authors)) + " contributors over the last 90 day in " + str(max_repos)
+    print("In total you have " + str(len(authors)) + " contributors over the last 90 day in " + str(i)
           + " repositories.")
 
 
