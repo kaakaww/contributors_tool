@@ -5,6 +5,7 @@ import time
 from github import Github
 from github import RateLimitExceededException
 
+import re
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Count developers on a GitHub repo or in a GitHub Organization "
@@ -16,6 +17,7 @@ def parse_args():
                                                                    "to inspect? Default=100")
     parser.add_argument('--repo_name', type=str, help="Name of the repo you want to check in 'org/repo' format")
     parser.add_argument('--ghe_hostname', type=str, help="If you use GHE, this is the hostname part of the URL")
+    parser.add_argument('--count_by_email', action='store_true', help="By default we attempt to count contributors by GitHub login. This will count by committer email address, which may be less accurate.")
 
     args = parser.parse_args()
 
@@ -79,7 +81,7 @@ def rate_limited_retry():
 
 
 @rate_limited_retry()
-def repo_details(repo_name):
+def repo_details(repo_name, count_by):
     global g
     repo_authors = {}
     earliest_commit = None
@@ -90,16 +92,16 @@ def repo_details(repo_name):
             earliest_commit = commit_date - timedelta(days_back)
 
         if commit_date > earliest_commit:
-            if commit.raw_data['author'] and 'login' in commit.raw_data['author']:
+            if count_by == 'login' and commit.raw_data['author'] and 'login' in commit.raw_data['author']:
                 author = commit.raw_data['author']['login']
             else:
                 author = commit.raw_data['commit']['committer']['email']
-            # author = commit.raw_data['commit']['committer']['email']
 
-            if not author.startswith('root@') and author not in repo_authors:
-                    repo_authors[author] = commit.raw_data['commit']['committer']['date']
-            #if commit.raw_data['commit']['committer']['email'] not in repo_authors:
-            #    repo_authors[commit.raw_data['commit']['committer']['email']] = commit.raw_data['commit']['committer']['date']
+            # skip automation users that look like root@1976d98b6ec0
+            if re.match(r"^root@\w+$", author):
+                continue
+            if author not in repo_authors:
+                repo_authors[author] = commit.raw_data['commit']['committer']['date']
         else:
             break
 
@@ -115,7 +117,7 @@ def repo_details(repo_name):
 
 
 @rate_limited_retry()
-def org_iterator(org_name):
+def org_iterator(org_name, count_by):
     global authors
     global g
     org = g.get_organization(org_name)
@@ -125,7 +127,7 @@ def org_iterator(org_name):
     for repo in repos:
         if i < max_repos:
             i += 1
-            authors.update(repo_details(repo.full_name))
+            authors.update(repo_details(repo.full_name, count_by))
         else:
             break
     print("In total you have " + str(len(authors)) + " contributors over the last 90 day in " + str(i)
@@ -136,11 +138,12 @@ args = parse_args()
 days_back = 90
 authors = {}
 g = Github(login_or_token=args.access_token)
+count_by = 'email' if args.count_by_email is True else 'login'
 
 if args.repo_name is not None:
-    authors.update(repo_details(args.repo_name))
+    authors.update(repo_details(args.repo_name,count_by))
 elif args.org_name is not None:
-    org_iterator(args.org_name)
+    org_iterator(args.org_name,count_by)
     for author, date in authors.items():
         print(author + ": " + date)
 else:
