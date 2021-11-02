@@ -3,6 +3,7 @@ import os
 import git.exc
 from git import Repo
 import argparse
+import re
 from datetime import timedelta
 
 
@@ -26,8 +27,12 @@ def read_repo_committers(repo_obj):
                 earliest_commit = commit.committed_datetime - timedelta(days_back)
 
             if commit.committed_datetime > earliest_commit:
-                if commit.committer.email not in repo_authors:
-                    repo_authors[commit.committer.email] = commit.committed_datetime.strftime("%Y-%m-%dT%H:%M:%S")
+                author = commit.committer.email
+                # skip automation users that look like root@1976d98b6ec0
+                if re.match(r"^root@\w+$", author):
+                    continue
+                if author not in repo_authors:
+                    repo_authors[author] = commit.committed_datetime.strftime("%Y-%m-%dT%H:%M:%S")
             else:
                 break
 
@@ -35,7 +40,7 @@ def read_repo_committers(repo_obj):
             f'In the repository \'{repo_obj.working_dir}\', there are {len(repo_authors)}'
             f' contributor(s) over 90 days with the earliest commit'
             f' on {earliest_commit}.')
-        print('Here is the list of contributors email addresses:')
+        print('Here is the list of GitHub contributors:')
         for author, commit_date in repo_authors.items():
             print(author + ': ' + commit_date)
         print('\n')
