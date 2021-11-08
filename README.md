@@ -51,3 +51,9 @@ optional arguments:
                         Path to the local repository. Defaults to current working directory
   
 ```
+
+Here's an alternative way to verify these results with a command-line command:
+```console
+git shortlog -sen --all --since=$(date -j -v-90d -f %Y-%m-%d $(git log --pretty="%ad" --date=short -1 --all) +%Y-%m-%d) | cat - | grep -v '\<root@\w\+\>' | wc -l
+```
+This has been verified on a Mac. Commands may differ on a Linux environment. Removing the `| wc-l` will allow you to inspect the results.

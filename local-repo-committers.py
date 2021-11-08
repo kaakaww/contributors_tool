@@ -21,31 +21,35 @@ def read_repo_committers(repo_obj):
     """
     repo_authors = {}
     earliest_commit = None
-    try:
-        for commit in repo_obj.iter_commits():
-            if earliest_commit is None:
-                earliest_commit = commit.committed_datetime - timedelta(days_back)
+    #try:
+    for commit in repo_obj.iter_commits(repo_obj.refs):
+        if earliest_commit is None:
+            earliest_commit = commit.committed_datetime - timedelta(days_back)
 
-            if commit.committed_datetime > earliest_commit:
-                author = commit.committer.email
-                # skip automation users that look like root@1976d98b6ec0
-                if re.match(r"^root@\w+$", author):
-                    continue
-                if author not in repo_authors:
-                    repo_authors[author] = commit.committed_datetime.strftime("%Y-%m-%dT%H:%M:%S")
+        if commit.committed_datetime > earliest_commit:
+            if commit.author.email:
+                author = commit.author.email
             else:
-                break
+                author = commit.committer.email
 
-        print(
-            f'In the repository \'{repo_obj.working_dir}\', there are {len(repo_authors)}'
-            f' contributor(s) over 90 days with the earliest commit'
-            f' on {earliest_commit}.')
-        print('Here is the list of GitHub contributors:')
-        for author, commit_date in repo_authors.items():
-            print(author + ': ' + commit_date)
-        print('\n')
-    except:
-        pass
+            # skip automation users that look like root@1976d98b6ec0
+            if re.match(r"^root@\w+$", author):
+                continue
+            if author not in repo_authors:
+                repo_authors[author] = commit.committed_datetime.strftime("%Y-%m-%dT%H:%M:%S")
+        else:
+            break
+
+    print(
+        f'In the repository \'{repo_obj.working_dir}\', there are {len(repo_authors)}'
+        f' contributor(s) over 90 days with the earliest commit'
+        f' on {earliest_commit}.')
+    print('Here is the list of GitHub contributors:')
+    for author, commit_date in repo_authors.items():
+        print(author + ': ' + commit_date)
+    print('\n')
+    #except:
+    #    pass
 
 
 args = parse_args()
