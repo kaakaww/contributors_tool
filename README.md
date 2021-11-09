@@ -1,6 +1,9 @@
 # StackHawk Contributors Tool
-This tool is designed to help development and security team discover how many active committers are participating
+This tool is designed to help development and security teams discover how many active committers are participating
 in their software development process.
+
+## Is This Accurate?
+Sort of. The results from this tool are only as accurate as your repositories are clean and consistent. The _most_ accurate way to count a number of contributors is to use the "GitHub Specific" method below, counting by GitHub usernames (which is the default). In the end, we recommend you review the results and watch out for duplicate contributors (with slightly different names or email addresses) and automation users. 
 
 ## Install 
 This program was developed and intended for Python 3.8. Choose your Python versioning weapon and install 3.8.
@@ -34,7 +37,7 @@ optional arguments:
                         Name of the repo you want to check in 'org/repo' format
   --ghe_hostname GHE_HOSTNAME
                         If you use GHE, this is the hostname part of the URL
-  --count-by {login,name,email}
+  --count-by {username,name,email}
                         How to count contributors. Either by GitHub username, display name or email
                         address of the author. Default is count by GitHub username.
 ```
