@@ -17,7 +17,7 @@ def parse_args():
                                                                    "to inspect? Default=100")
     parser.add_argument('--repo_name', type=str, help="Name of the repo you want to check in 'org/repo' format")
     parser.add_argument('--ghe_hostname', type=str, help="If you use GHE, this is the hostname part of the URL")
-    parser.add_argument('--count_by_email', action='store_true', help="By default we attempt to count contributors by GitHub login. This will count by committer email address, which may be less accurate.")
+    parser.add_argument('--count-by', default="username", choices=["username","name","email"], help="How to count contributors. Either by GitHub username, display name or email address of the author. Default is count by GitHub username.")
 
     args = parser.parse_args()
 
@@ -85,25 +85,43 @@ def repo_details(repo_name, count_by):
     global g
     repo_authors = {}
     earliest_commit = None
-    commits = g.get_repo(repo_name).get_commits()
-    for commit in commits:
-        commit_date = datetime.strptime(commit.raw_data['commit']['committer']['date'], "%Y-%m-%dT%H:%M:%SZ")
-        if earliest_commit is None:
-            earliest_commit = commit_date - timedelta(days_back)
+    repo = g.get_repo(repo_name)
+    for branch in repo.get_branches():
+        for commit in repo.get_commits(sha=branch.name):
+            commit_date = datetime.strptime(commit.raw_data['commit']['committer']['date'], "%Y-%m-%dT%H:%M:%SZ")
+            if earliest_commit is None:
+                earliest_commit = commit_date - timedelta(days_back)
 
-        if commit_date > earliest_commit:
-            if count_by == 'login' and commit.raw_data['author'] and 'login' in commit.raw_data['author']:
-                author = commit.raw_data['author']['login']
+            if commit_date > earliest_commit:
+                if 'author' in commit.raw_data['commit']:
+                    author_email = commit.raw_data['commit']['author']['email']
+                    author_name = commit.raw_data['commit']['author']['name']
+                else:
+                    author_email = commit.raw_data['commit']['committer']['email']
+                    author_name = commit.raw_data['commit']['committer']['name']
+
+                if 'author' in commit.raw_data and commit.raw_data['author'] and 'login' in commit.raw_data['author']:
+                    author_login = commit.raw_data['author']['login']
+                else:
+                    author_login = None
+
+                # skip automation users that look like root@1976d98b6ec0
+                if re.match(r"^root@\w+$", author_email):
+                    continue
+
+                if count_by == 'username' and author_login:
+                    author = author_login
+                elif count_by == 'email':
+                    author = author_email
+                elif count_by == 'name':
+                    author = author_name
+                else:
+                    author = author_email
+
+                if author not in repo_authors:
+                    repo_authors[author] = commit.raw_data['commit']['committer']['date']
             else:
-                author = commit.raw_data['commit']['committer']['email']
-
-            # skip automation users that look like root@1976d98b6ec0
-            if re.match(r"^root@\w+$", author):
-                continue
-            if author not in repo_authors:
-                repo_authors[author] = commit.raw_data['commit']['committer']['date']
-        else:
-            break
+                break
 
     print(
         f'In the repository \'{repo_name}\', there are {len(repo_authors)}'
@@ -138,7 +156,7 @@ args = parse_args()
 days_back = 90
 authors = {}
 g = Github(login_or_token=args.access_token)
-count_by = 'email' if args.count_by_email is True else 'login'
+count_by = args.count_by
 
 if args.repo_name is not None:
     authors.update(repo_details(args.repo_name,count_by))

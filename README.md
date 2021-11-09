@@ -1,6 +1,9 @@
 # StackHawk Contributors Tool
-This tool is designed to help development and security team discover how many active committers are participating
+This tool is designed to help development and security teams discover how many active committers are participating
 in their software development process.
+
+## Is This Accurate?
+Sort of. The results from this tool are only as accurate as your repositories are clean and consistent. The _most_ accurate way to count a number of contributors is to use the "GitHub Specific" method below, counting by GitHub usernames (which is the default). In the end, we recommend you review the results and watch out for duplicate contributors (with slightly different names or email addresses) and automation users. 
 
 ## Install 
 This program was developed and intended for Python 3.8. Choose your Python versioning weapon and install 3.8.
@@ -17,7 +20,9 @@ development period or in the case of and Organization scan, each repo and it's c
 committers at the end.
 
 ```console
-usage: github-repo-committers.py [-h] [--access_token ACCESS_TOKEN] [--org_name ORG_NAME] [--max_repos MAX_REPOS] [--repo_name REPO_NAME] [--ghe_hostname GHE_HOSTNAME]
+usage: github-repo-committers.py [-h] --access_token ACCESS_TOKEN [--org_name ORG_NAME]
+                                 [--max_repos MAX_REPOS] [--repo_name REPO_NAME]
+                                 [--ghe_hostname GHE_HOSTNAME] [--count-by {login,name,email}]
 
 Count developers on a GitHub repo or in a GitHub Organization for the last 90 days
 
@@ -27,11 +32,14 @@ optional arguments:
                         Your Github PAT
   --org_name ORG_NAME   Name of the GitHub Organization you want to check in 'org' format
   --max_repos MAX_REPOS
-                        HOw many repos in the Org do you want to inspect? Default=100
+                        How many repos in the Org do you want to inspect? Default=100
   --repo_name REPO_NAME
                         Name of the repo you want to check in 'org/repo' format
   --ghe_hostname GHE_HOSTNAME
                         If you use GHE, this is the hostname part of the URL
+  --count-by {username,name,email}
+                        How to count contributors. Either by GitHub username, display name or email
+                        address of the author. Default is count by GitHub username.
 ```
 
 
@@ -41,13 +49,21 @@ This will output the path of the repo and the committers on said repo for the la
 development period.
 
 ```console
-usage: local-repo-committers.py [-h] [--dir DIR] 
+usage: local-repo-committers.py [-h] [--dir DIR] [--count-by {name,email}]
 
-Count developers on a GitHub repo or in a GitHub Organization for the last 90 days
+Count developers on a local repo for the last 90 days
 
 optional arguments:
   -h, --help            show this help message and exit
-  --dir DIR
-                        Path to the local repository. Defaults to current working directory
-  
+  --dir DIR             Path to the repository directory
+  --count-by {name,email}
+                        How to count contributors. Either by display name or email address of the
+                        author. Default is count by email.
 ```
+
+### Command Line
+Here's an alternative way to verify these results with a command-line command:
+```
+git shortlog -sen --all --since=$(date -j -v-90d -f %Y-%m-%d $(git log --pretty="%ad" --date=short -1 --all) +%Y-%m-%d) | cat - | grep -v '\<root@\w\+\>' | wc -l
+```
+This command has been verified on a Mac. Commands may differ on a Linux environment. Removing the `| wc-l` will allow you to inspect the results. To count by name, remove the `-e` option from the `git shortlog` command.
