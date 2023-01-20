@@ -5,7 +5,11 @@ in their software development process.
 ## Is This Accurate?
 It can be, but this method will require some clean-up and validation from the owner of the repositories being analyzed. This tool will definitely uncover all contributors in your Git project(s), but there may be some noise in the results. For example, a single person could commit under different names or email addresses, and then would look like more than one contributor. The _most_ accurate way to count a number of contributors is to use the "GitHub Specific" method below, counting by GitHub usernames (which is the default). In the end, we recommend you review the results and watch out for duplicate contributors (with slightly different names or email addresses) and remove automation committers. 
 
-## Install 
+## Run with Docker
+
+Docker instructions go here.
+
+## Prerequisites
 These scripts were developed for Python 3.8 and higher. Verify your version of Python with:
 ```shell
 python3 --version
@@ -13,12 +17,16 @@ python3 --version
 
 If you need help installing Python for your platform, a good place to start is the [Python Beginner's Guide Download](https://wiki.python.org/moin/BeginnersGuide/Download) page.
 
+These scripts require `git`. If you do not have `git` installed on your machine, you can find it at the [Git Downloads](https://git-scm.com/downloads) page.
+
 These scripts require [Pipenv](https://pipenv.pypa.io/en/latest/) to install their dependencies. For detailed Pipenv installation guidance, see [Installing Pipenv](https://pipenv.pypa.io/en/latest/install/#installing-pipenv). On most platforms, you can install `pipenv` with `pip3` like so:
 ```shell
 pip3 install --user pipenv
 ```
 
-Install the programs' dependencies into a virtual environment with:
+## Install
+
+Install the scripts' dependencies into a virtual environment with:
 ```shell
 pipenv install
 ```

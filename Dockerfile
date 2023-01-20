@@ -1,5 +1,7 @@
-FROM python:3.8.16-slim
+FROM python:3.8.16-slim as base
+
 ENV PIPENV_PIPFILE=/app/Pipfile
+ENV PATH=/usr/local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/app
 
 RUN apt update
 RUN apt install -y git vim
@@ -9,9 +11,12 @@ COPY ./*.py ./LICENSE ./Pip* ./README.md /app/
 RUN cd /app
 
 RUN pip install pipenv
-RUN pipenv install
+RUN pipenv install --system
 
-WORKDIR /app
+WORKDIR /repo
 
-ENV PWD=/app
-#CMD ["java", "-Djava.security.egd=file:/dev/./urandom", "-jar", "/app/java-spring-vuly-0.1.0.jar"]
+FROM base as contributors-github
+ENTRYPOINT /app/github-repo-committers.py
+
+FROM base as contributors-local
+ENTRYPOINT /app/local-repo-committers.py
