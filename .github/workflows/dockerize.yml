@@ -7,7 +7,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  TAGS: |
+  META_TAGS: |
     # set latest tag for default branch
     type=raw,value=latest,enable={{is_default_branch}}
     type=schedule
@@ -45,8 +45,8 @@ jobs:
         id: contributors-github
         uses: docker/metadata-action@v4.3.0
         with:
-          images: ${{ env.REGISTRY }}/kaakaww/contributors-github:latest
-          tags: ${{ env.TAGS }}
+          images: ${{ env.REGISTRY }}/kaakaww/contributors-github
+          tags: ${{ env.META_TAGS }}
 
       - name: Build and push contributors-github image
         uses: docker/build-push-action@v3.3.0
