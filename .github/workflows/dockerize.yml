@@ -1,0 +1,13 @@
+name: Dockerize Contrib Scripts
+
+on:
+  push:
+    branches:
+      - feature/dockerfile
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - run: docker build --tag ghcr.io/kaakaww/contributors-github --target contributors-github .
+      - run: docker build --tag ghcr.io/kaakaww/contributors-local --target contributors-local .
