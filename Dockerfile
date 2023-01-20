@@ -11,6 +11,7 @@ COPY ./*.py ./LICENSE ./Pipfile ./README.md /app/
 RUN cd /app
 
 RUN pip install pipenv
+RUN pipenv lock
 RUN pipenv install --system
 
 WORKDIR /repo
