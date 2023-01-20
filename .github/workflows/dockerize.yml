@@ -9,9 +9,35 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Check out repo
+#      - name: Check out repo
+#        uses: actions/checkout@v3
+#      - name: Build contributors-github container
+#        run: docker build --tag ghcr.io/kaakaww/contributors-github --target contributors-github .
+#      - name: Build contributors-local container
+#        run: docker build --tag ghcr.io/kaakaww/contributors-local --target contributors-local .
+      - name: Dump environment (troubleshooting)
+        run: env
+
+      - name: Checkout repository
         uses: actions/checkout@v3
-      - name: Build contributors-github container
-        run: docker build --tag ghcr.io/kaakaww/contributors-github --target contributors-github .
-      - name: Build contributors-local container
-        run: docker build --tag ghcr.io/kaakaww/contributors-local --target contributors-local .
+
+      - name: Log in to the GitHub container registry
+        uses: docker/login-action@v2.1.0
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata (tags, labels) for Docker
+        id: contributors-github
+        uses: docker/metadata-action@4.3.0
+        with:
+          images: ${{ env.REGISTRY }}/contributors-github
+
+      - name: Build and push contributors-github image
+        uses: docker/build-push-action@3.3.0
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.contributors-github.outputs.tags }}
+          labels: ${{ steps.contributors-github.outputs.labels }}
