@@ -30,12 +30,12 @@ jobs:
 
       - name: Extract metadata (tags, labels) for Docker
         id: contributors-github
-        uses: docker/metadata-action@4.3.0
+        uses: docker/metadata-action@v4.3.0
         with:
           images: ${{ env.REGISTRY }}/contributors-github
 
       - name: Build and push contributors-github image
-        uses: docker/build-push-action@3.3.0
+        uses: docker/build-push-action@v3.3.0
         with:
           context: .
           push: true
