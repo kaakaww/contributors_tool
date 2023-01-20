@@ -5,9 +5,15 @@ on:
     branches:
       - feature/dockerfile
 
+env:
+  REGISTRY: ghcr.io
+
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
     steps:
 #      - name: Check out repo
 #        uses: actions/checkout@v3
@@ -32,7 +38,7 @@ jobs:
         id: contributors-github
         uses: docker/metadata-action@v4.3.0
         with:
-          images: ${{ env.REGISTRY }}/contributors-github
+          images: ${{ env.REGISTRY }}/kaakaww/contributors-github
 
       - name: Build and push contributors-github image
         uses: docker/build-push-action@v3.3.0
