@@ -18,7 +18,7 @@ wrapt = "==1.12.1"
 Deprecated = "==1.2.12"
 GitPython = "==3.1.18"
 PyGithub = "==1.55"
-PyJWT = "==2.1.0"
+PyJWT = "==2.4.0"
 PyNaCl = "==1.4.0"
 
 [dev-packages]
