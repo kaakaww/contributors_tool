@@ -65,6 +65,7 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           context: .
+          target: contributors-github
           platforms: linux/amd64,linux/arm64/v8
           push: true
           tags: ${{ steps.contributors-github.outputs.tags }}
@@ -83,6 +84,7 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           context: .
+          target: contributors-local
           platforms: linux/amd64,linux/arm64/v8
           push: true
           tags: ${{ steps.contributors-local.outputs.tags }}
