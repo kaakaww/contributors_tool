@@ -69,3 +69,21 @@ jobs:
           push: true
           tags: ${{ steps.contributors-github.outputs.tags }}
           labels: ${{ steps.contributors-github.outputs.labels }}
+
+      - name: Extract metadata (tags, labels) for contributors-local image
+        id: contributors-local
+        uses: docker/metadata-action@v4
+        with:
+          images: |
+            ${{ env.REGISTRY }}/kaakaww/contributors-local
+            zconger/contributors-local
+          tags: ${{ env.META_TAGS }}
+
+      - name: Build and push contributors-local image
+        uses: docker/build-push-action@v3
+        with:
+          context: .
+          platforms: linux/amd64,linux/arm64/v8
+          push: true
+          tags: ${{ steps.contributors-local.outputs.tags }}
+          labels: ${{ steps.contributors-local.outputs.labels }}
