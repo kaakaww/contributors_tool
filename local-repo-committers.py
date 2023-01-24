@@ -11,7 +11,10 @@ from datetime import timedelta
 def parse_args():
     parser = argparse.ArgumentParser(description="Count developers on a local repo for the last 90 days")
     parser.add_argument('--dir', default="./", type=str, help="Path to the repository directory")
-    parser.add_argument('--count-by', default="email", choices=["name","email"], help="How to count contributors. Either by display name or email address of the author. Default is count by email.")
+    parser.add_argument('--count-by', default="email", choices=["name","email"], help="How to count contributors. "
+                                                                                      "Either by display name or "
+                                                                                      "email address of the author. "
+                                                                                      "Default is count by email.")
     args = parser.parse_args()
     return args
 

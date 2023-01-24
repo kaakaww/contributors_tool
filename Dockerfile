@@ -17,7 +17,7 @@ RUN pipenv install --system
 WORKDIR /repo
 
 FROM base as contributors-github
-ENTRYPOINT /app/github-repo-committers.py
+ENTRYPOINT ["/app/github-repo-committers.py"]
 
 FROM base as contributors-local
-ENTRYPOINT /app/local-repo-committers.py
+ENTRYPOINT ["/app/local-repo-committers.py"]
