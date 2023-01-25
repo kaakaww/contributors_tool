@@ -7,7 +7,7 @@ RUN apt update
 RUN apt install -y git vim
 
 RUN mkdir /app
-COPY ./*.py ./LICENSE ./Pipfile ./README.md /app/
+COPY ./*.py ./LICENSE ./Pip* ./README.md /app/
 RUN cd /app
 
 RUN pip install pipenv
