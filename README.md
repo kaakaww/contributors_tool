@@ -134,7 +134,8 @@ optional arguments:
 ```
 
 ## `git` CLI Verification
-Here's an alternative way to verify these results with a command-line command:
+Here's an alternative way to verify these results with the `git` command:
+
 ```
 git shortlog -sen --all --since=$(date -j -v-90d -f %Y-%m-%d $(git log --pretty="%ad" --date=short -1 --all) +%Y-%m-%d) | cat - | grep -v '\<root@\w\+\>' | wc -l
 ```
