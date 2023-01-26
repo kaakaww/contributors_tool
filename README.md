@@ -11,9 +11,9 @@ The easiest way to check your repos for active committers is to use our containe
 
 ### Check a Local Repo
 
-To check a local repo for active committers, run the `ghcr.io/kaakaww/contributors-local` against it. 
+To check a local repo for active committers, run the `ghcr.io/kaakaww/contributors-local` against it. To allow the container to see your local repository, you will need to mount it as a volume to the `/repo` directory within the container using the `--volume` flag.
 
-On Mac or Linux, open a terminal and `cd` to the root of your local repo and run the following command:
+For example, on Mac or Linux, open a terminal and `cd` to the root of your local repo and run the following command:
 
 ```shell
 docker run --volume $(pwd):/repo ghcr.io/kaakaww/contributors-local
@@ -27,9 +27,11 @@ docker run --volume ${PWD}:/repo ghcr.io/kaakaww/contributors-local
 
 ### Check a GitHub Repo or Org
 
-To check GitHub directly for active committers, use the `ghcr.io/kaakaww/contributors-github` container. You will need a GitHub Personal Access Token (PAT), which we will refer to as `ACCESS_TOKEN` in the following examples.
+To check GitHub directly for active committers, use the `ghcr.io/kaakaww/contributors-github` container. You will need a [GitHub Personal Access Token (PAT)](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token), which we will refer to as `ACCESS_TOKEN` in the following examples.
 
-For example, to check a single repo, `kaakaww/contributors_tool`, run the following command:
+Since this container is looking at your remote GitHub repository, you do not need to check out your repository, `cd` to it, or refer to it in any way.
+
+For example, to check a single GitHub repo, `kaakaww/contributors_tool`, run the following command:
 
 ```shell
 docker run ghcr.io/kaakaww/contributors-github --access_token ACCESS_TOKEN --repo kaakaww/contributors_tool
