@@ -58,7 +58,6 @@ jobs:
         with:
           images: |
             ${{ env.REGISTRY }}/kaakaww/contributors-github
-            zconger/contributors-github
           tags: ${{ env.META_TAGS }}
 
       - name: Build and push contributors-github image
@@ -77,7 +76,6 @@ jobs:
         with:
           images: |
             ${{ env.REGISTRY }}/kaakaww/contributors-local
-            zconger/contributors-local
           tags: ${{ env.META_TAGS }}
 
       - name: Build and push contributors-local image
