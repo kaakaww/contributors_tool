@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import argparse
 from datetime import datetime, timezone, timedelta
 import time
@@ -6,6 +7,7 @@ from github import Github
 from github import RateLimitExceededException
 
 import re
+
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Count developers on a GitHub repo or in a GitHub Organization "
@@ -17,7 +19,9 @@ def parse_args():
                                                                    "to inspect? Default=100")
     parser.add_argument('--repo_name', type=str, help="Name of the repo you want to check in 'org/repo' format")
     parser.add_argument('--ghe_hostname', type=str, help="If you use GHE, this is the hostname part of the URL")
-    parser.add_argument('--count-by', default="username", choices=["username","name","email"], help="How to count contributors. Either by GitHub username, display name or email address of the author. Default is count by GitHub username.")
+    parser.add_argument('--count-by', default="username", choices=["username", "name", "email"],
+                        help="How to count contributors. Either by GitHub username, display name or email address of "
+                             "the author. Default is count by GitHub username.")
 
     args = parser.parse_args()
 
@@ -76,7 +80,9 @@ def rate_limited_retry():
                         time.sleep(seconds)
                         print("Done waiting - resume!")
             raise Exception("Failed too many times")
+
         return ret
+
     return decorator
 
 
@@ -159,9 +165,9 @@ g = Github(login_or_token=args.access_token)
 count_by = args.count_by
 
 if args.repo_name is not None:
-    authors.update(repo_details(args.repo_name,count_by))
+    authors.update(repo_details(args.repo_name, count_by))
 elif args.org_name is not None:
-    org_iterator(args.org_name,count_by)
+    org_iterator(args.org_name, count_by)
     for author, date in authors.items():
         print(author + ": " + date)
 else:
