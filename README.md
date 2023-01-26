@@ -5,11 +5,51 @@ in their software development process.
 ## Is This Accurate?
 It can be, but this method will require some clean-up and validation from the owner of the repositories being analyzed. This tool will definitely uncover all contributors in your Git project(s), but there may be some noise in the results. For example, a single person could commit under different names or email addresses, and then would look like more than one contributor. The _most_ accurate way to count a number of contributors is to use the "GitHub Specific" method below, counting by GitHub usernames (which is the default). In the end, we recommend you review the results and watch out for duplicate contributors (with slightly different names or email addresses) and remove automation committers. 
 
-## Run with Docker
+## Running the Scripts with Docker
 
-Docker instructions go here.
+The easiest way to check your repos for active committers is to use our containerized scripts. All you need to run them is a container runtime such as [Docker Desktop](https://www.docker.com/products/docker-desktop/).
 
-## Prerequisites
+### Check a Local Repo
+
+To check a local repo for active committers, run the `ghcr.io/kaakaww/contributors-local` against it. 
+
+On Mac or Linux, open a terminal and `cd` to the root of your local repo and run the following command:
+
+```shell
+docker run --volume $(pwd):/repo ghcr.io/kaakaww/contributors-local
+```
+
+On Windows, open Powershell and `cd` to the root of your local repo and run the following command:
+
+```shell
+docker run --volume ${PWD}:/repo ghcr.io/kaakaww/contributors-local
+```
+
+### Check a GitHub Repo or Org
+
+To check GitHub directly for active committers, use the `ghcr.io/kaakaww/contributors-github` container. You will need a GitHub Personal Access Token (PAT), which we will refer to as `ACCESS_TOKEN` in the following examples.
+
+For example, to check a single repo, `kaakaww/contributors_tool`, run the following command:
+
+```shell
+docker run ghcr.io/kaakaww/contributors-github --access_token ACCESS_TOKEN --repo kaakaww/contributors_tool
+```
+
+Or to check **all** the repos in a GitHub organization, `ORG_NAME`, run the following (this could take a while):
+
+```shell
+docker run ghcr.io/kaakaww/contributors-github --access_token ACCESS_TOKEN --org ORG_NAME
+```
+
+Use the `-h` flag to see other options for this script.
+
+```shell
+docker run ghcr.io/kaakaww/contributors-github -h
+```
+
+## Building and Running the Scripts Locally
+
+### Prerequisites
 These scripts were developed for Python 3.8 and higher. Verify your version of Python with:
 ```shell
 python3 --version
@@ -24,7 +64,7 @@ These scripts require [Pipenv](https://pipenv.pypa.io/en/latest/) to install the
 pip3 install --user pipenv
 ```
 
-## Install
+### Install
 
 Install the scripts' dependencies into a virtual environment with:
 ```shell
@@ -46,7 +86,7 @@ If you installed dependencies globally, you can run the scripts without Pipenv, 
 python3 {script_name} {options}
 ```
 
-## GitHub Specific
+### Check a GitHub Repo or Org
 The GitHub version of this tool will help inspect a single repository on GitHub or look at many repositories within
 a GitHub organization. This will output the name of the repo and the committers on said repo for the last 90 day 
 development period or in the case of and Organization scan, each repo and it's committers as well as a summary of 
@@ -75,7 +115,7 @@ optional arguments:
                         address of the author. Default is count by GitHub username.
 ```
 
-## Local Repository
+### Check a Local Repo
 The GitHub version of this tool will help inspect a single local repository. 
 This will output the path of the repo and the committers on said repo for the last 90 day 
 development period.
