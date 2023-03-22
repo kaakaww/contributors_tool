@@ -40,7 +40,7 @@ docker run ghcr.io/kaakaww/contributors-github --access_token ACCESS_TOKEN --rep
 Or to check **all** the repos in a GitHub organization, `ORG_NAME`, run the following (this could take a while):
 
 ```shell
-docker run ghcr.io/kaakaww/contributors-github --access_token ACCESS_TOKEN --org ORG_NAME
+docker run ghcr.io/kaakaww/contributors-github --access_token ACCESS_TOKEN --org_name ORG_NAME
 ```
 
 Use the `-h` flag to see other options for this script.
