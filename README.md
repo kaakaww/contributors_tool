@@ -136,9 +136,17 @@ optional arguments:
 ```
 
 ## `git` CLI Verification
-Here's an alternative way to verify these results with the `git` command:
 
+Removing the `| wc-l` will allow you to inspect the results. To count by name, remove the `-e` option from the `git shortlog` command.
+
+Here's an alternative way to verify these results with the `git` command.
+
+### Linux Bash terminal
+```bash
+git shortlog -sen --all --since=$(date -d "$(git log --pretty="%ad" --date=short -1 --all) -90 days" +%Y-%m-%d) | grep -v '\<root@\w\+\>' | wc -l
 ```
+
+### MacOS Terminal (bsd)
+```shell
 git shortlog -sen --all --since=$(date -j -v-90d -f %Y-%m-%d $(git log --pretty="%ad" --date=short -1 --all) +%Y-%m-%d) | cat - | grep -v '\<root@\w\+\>' | wc -l
 ```
-This command has been verified on a Mac. Commands may differ on a Linux environment. Removing the `| wc-l` will allow you to inspect the results. To count by name, remove the `-e` option from the `git shortlog` command.
