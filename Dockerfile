@@ -1,17 +1,18 @@
-FROM python:3.8.16-slim as base
+FROM python:3.11-slim as base
 
 ENV PIPENV_PIPFILE=/app/Pipfile
 ENV PATH=/usr/local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/app
 
-RUN apt update
-RUN apt install -y git vim
+RUN apt update && \
+    apt install -y git vim && \
+    rm -rf /var/lib/apt/lists/* && \
+    mkdir /app
 
-RUN mkdir /app
 COPY ./*.py ./LICENSE ./Pip* ./README.md /app/
-RUN cd /app
-
-RUN pip install pipenv
-RUN pipenv install --system
+RUN cd /app && \
+    pip install pipenv && \
+    pipenv install --system && \
+    git config --global --add safe.directory /repo
 
 WORKDIR /repo
 
