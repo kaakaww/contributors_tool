@@ -9,6 +9,12 @@ from github import RateLimitExceededException
 import re
 
 
+class CommitterInfo:
+    def __init__(self, date, commit_url):
+        self.date = date
+        self.commit_url = commit_url
+
+
 def parse_args():
     parser = argparse.ArgumentParser(description="Count developers on a GitHub repo or in a GitHub Organization "
                                                  "for the last 90 days")
@@ -18,6 +24,9 @@ def parse_args():
     parser.add_argument('--max_repos', default=100, type=str, help="How many repos in the Org do you want "
                                                                    "to inspect? Default=100")
     parser.add_argument('--repo_name', type=str, help="Name of the repo you want to check in 'org/repo' format")
+    parser.add_argument('--commit_urls', type=bool,
+                        help="Controls outputting commit URLs, defaults to '--no-commit-urls'",
+                        default=False, action=argparse.BooleanOptionalAction)
     parser.add_argument('--ghe_hostname', type=str, help="If you use GHE, this is the hostname part of the URL")
     parser.add_argument('--count-by', default="username", choices=["username", "name", "email"],
                         help="How to count contributors. Either by GitHub username, display name or email address of "
@@ -125,7 +134,8 @@ def repo_details(repo_name, count_by):
                     author = author_email
 
                 if author not in repo_authors:
-                    repo_authors[author] = commit.raw_data['commit']['committer']['date']
+                    repo_authors[author] = CommitterInfo(commit.raw_data['commit']['committer']['date'],
+                                                         commit.raw_data['html_url'])
             else:
                 break
 
@@ -134,8 +144,11 @@ def repo_details(repo_name, count_by):
         f' contributor(s) over 90 days with the earliest commit'
         f' on {earliest_commit}.')
     print('Here is the list of Github contributors:')
-    for author, commit_date in repo_authors.items():
-        print(author + ': ' + commit_date)
+    for author, committer_info in repo_authors.items():
+        print(author + ': ' + committer_info.date, end='')
+        if args.commit_urls:
+            print(',', committer_info.commit_url, end='')
+        print()
     print('\n')
     return repo_authors
 

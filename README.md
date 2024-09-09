@@ -97,6 +97,7 @@ committers at the end.
 ```console
 usage: github-repo-committers.py [-h] --access_token ACCESS_TOKEN [--org_name ORG_NAME]
                                  [--max_repos MAX_REPOS] [--repo_name REPO_NAME]
+                                 [--commit_urls | --no-commit_urls]
                                  [--ghe_hostname GHE_HOSTNAME] [--count-by {login,name,email}]
 
 Count developers on a GitHub repo or in a GitHub Organization for the last 90 days
@@ -110,6 +111,8 @@ optional arguments:
                         How many repos in the Org do you want to inspect? Default=100
   --repo_name REPO_NAME
                         Name of the repo you want to check in 'org/repo' format
+  --commit_urls, --no-commit_urls
+                        Controls outputting commit URLs, defaults to '--no-commit-urls'                        
   --ghe_hostname GHE_HOSTNAME
                         If you use GHE, this is the hostname part of the URL
   --count-by {username,name,email}
