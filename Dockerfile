@@ -1,4 +1,4 @@
-FROM python:3.8.16-slim as base
+FROM python:3.14.3-slim as base
 
 ENV PIPENV_PIPFILE=/app/Pipfile
 ENV PATH=/usr/local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/app
